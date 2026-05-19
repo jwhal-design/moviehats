@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Your Crew Assignment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Special+Elite&family=Limelight&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f4ead5;
+    --cream-dark: #e8dcc0;
+    --ink: #1a1410;
+    --ink-soft: #2d251e;
+    --burgundy: #6b1f24;
+    --gold: #b8893a;
+    --gold-bright: #d4a850;
+    --shadow: rgba(26, 20, 16, 0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Special Elite', 'Courier New', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(184, 137, 58, 0.08), transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(107, 31, 36, 0.06), transparent 50%),
+      radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(45, 37, 30, 0.05) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .studio-header {
+    text-align: center;
+    padding: 1.5rem 0 2rem;
+    border-bottom: 3px double var(--ink);
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .studio-header::before {
+    content: '✦';
+    color: var(--gold);
+    font-size: 1.2rem;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    background: var(--cream);
+    padding: 0 0.8rem;
+  }
+
+  .studio-name {
+    font-family: 'Limelight', 'Playfair Display', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.4em;
+    color: var(--ink-soft);
+    margin-bottom: 0.5rem;
+  }
+
+  .presents {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--burgundy);
+    text-transform: uppercase;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 4rem 1rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .loading-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--ink-soft);
+    margin-top: 1rem;
+  }
+
+  .reel-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--cream-dark);
+    border-top-color: var(--burgundy);
+    border-radius: 50%;
+    margin: 0 auto;
+    animation: spin 0.9s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .lobby-card {
+    background: var(--cream-dark);
+    border: 2px solid var(--ink);
+    box-shadow:
+      0 0 0 1px var(--cream-dark),
+      0 0 0 4px var(--ink),
+      8px 12px 0 var(--shadow);
+    padding: 0;
+    margin-bottom: 2rem;
+    position: relative;
+    transform: rotate(-0.4deg);
+    animation: cardEnter 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  }
+
+  @keyframes cardEnter {
+    0% { opacity: 0; transform: rotate(-3deg) translateY(40px); }
+    100% { opacity: 1; transform: rotate(-0.4deg) translateY(0); }
+  }
+
+  .color-band {
+    height: 140px;
+    background: var(--burgundy);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .color-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(0,0,0,0.15) 0px,
+        rgba(0,0,0,0.15) 1px,
+        transparent 1px,
+        transparent 8px
+      );
+    opacity: 0.4;
+  }
+
+  .role-icon {
+    font-size: 4.5rem;
+    filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.3));
+    position: relative;
+    z-index: 1;
+    animation: iconBob 4s ease-in-out infinite;
+  }
+
+  @keyframes iconBob {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-4px) rotate(2deg); }
+  }
+
+  .role-block {
+    padding: 1.5rem 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px dashed var(--ink);
+  }
+
+  .role-label {
+    font-family: 'Special Elite', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--burgundy);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .role-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .role-tagline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  .group-id {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.3rem 0.9rem;
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'Special Elite', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .prompt-block {
+    padding: 1.75rem 1.5rem;
+    background: var(--cream);
+    position: relative;
+  }
+
+  .prompt-block::before {
+    content: 'SCENE';
+    position: absolute;
+    top: -0.6rem;
+    left: 1.5rem;
+    background: var(--cream-dark);
+    padding: 0.1rem 0.6rem;
+    font-family: 'Special Elite', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--burgundy);
+    border: 1px solid var(--ink);
+  }
+
+  .prompt-label {
+    font-family: 'Special Elite', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .prompt-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  .instructions {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: var(--cream-dark);
+    border: 1px solid var(--ink);
+    position: relative;
+  }
+
+  .instructions h3 {
+    font-family: 'Limelight', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    color: var(--burgundy);
+    margin-bottom: 0.75rem;
+    text-align: center;
+  }
+
+  .instructions ol {
+    list-style: none;
+    counter-reset: step;
+    padding-left: 0;
+  }
+
+  .instructions li {
+    counter-increment: step;
+    padding: 0.4rem 0 0.4rem 2rem;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  .instructions li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.35rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    background: var(--ink);
+    color: var(--gold-bright);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .reroll {
+    display: block;
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.85rem;
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    font-family: 'Special Elite', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .reroll:hover:not(:disabled) {
+    background: var(--gold-bright);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+
+  .reroll:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--ink);
+  }
+
+  .reroll:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .reroll-note {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-top: 0.5rem;
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  .footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    opacity: 0.6;
+    letter-spacing: 0.1em;
+  }
+
+  .fallback-notice {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    background: rgba(212, 168, 80, 0.15);
+    border-left: 3px solid var(--gold);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    font-style: italic;
+    text-align: center;
+  }
+
+  .sprockets {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    background-image:
+      linear-gradient(var(--ink), var(--ink)),
+      repeating-linear-gradient(
+        180deg,
+        transparent 0,
+        transparent 12px,
+        var(--cream) 12px,
+        var(--cream) 22px,
+        transparent 22px,
+        transparent 34px
+      );
+    background-size: 100% 100%, 8px 34px;
+    background-position: center;
+    background-repeat: no-repeat, repeat-y;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+
+  .sprockets.left { left: 0; }
+  .sprockets.right { right: 0; }
+
+  @media (max-width: 640px) {
+    .sprockets { width: 16px; }
+    .container { padding-left: 28px; padding-right: 28px; }
+    .role-name { font-size: 2rem; }
+    .role-icon { font-size: 3.5rem; }
+    .color-band { height: 110px; }
+    .prompt-text { font-size: 1.05rem; }
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="sprockets left"></div>
+<div class="sprockets right"></div>
+
+<div class="container">
+
+  <header class="studio-header">
+    <div class="studio-name">K20 STUDIOS</div>
+    <div class="presents">— presents —</div>
+  </header>
+
+  <div class="loading" id="loadingView">
+    <div class="reel-spinner"></div>
+    <p class="loading-text">Assigning your role…</p>
+  </div>
+
+  <main class="lobby-card hidden" id="card">
+    <div class="color-band" id="colorBand">
+      <div class="role-icon" id="roleIcon">🎬</div>
+    </div>
+
+    <div class="role-block">
+      <div class="role-label">You are cast as</div>
+      <h1 class="role-name" id="roleName">The Director</h1>
+      <p class="role-tagline" id="roleTagline">You see the big picture.</p>
+      <div class="group-id" id="groupId">Crew №1</div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">Your scene</div>
+      <p class="prompt-text" id="promptText">Loading…</p>
+    </div>
+  </main>
+
+  <section class="instructions hidden" id="instructions">
+    <h3>★ HOW TO PLAY YOUR PART ★</h3>
+    <ol>
+      <li>Find the other members of your crew — same color, same role.</li>
+      <li>Read your scene prompt aloud to your crew.</li>
+      <li>Answer from your role's perspective. Share stories, not just opinions.</li>
+      <li>Collect at least one name and one idea to take home.</li>
+    </ol>
+  </section>
+
+  <button class="reroll hidden" id="rerollBtn" onclick="reroll()">⟲ Reroll My Crew</button>
+  <p class="reroll-note hidden" id="rerollNote">Only reroll if your group is already overflowing.</p>
+
+  <div class="fallback-notice hidden" id="fallbackNotice">
+    Network hiccup — using local randomization. Group sizes may be uneven.
+  </div>
+
+  <footer class="footer">
+    A K20 Center Production · Now Showing
+  </footer>
+
+</div>
+
+<script>
+  // =========================================================================
+  // CONFIG — date-based session ID auto-resets the counter each day
+  // =========================================================================
+  const SESSION_ID = 'k20-sort-' + new Date().toISOString().slice(0, 10);
+  const COUNTER_URL = 'https://abacus.jasoncameron.dev/hit/k20sort/' + SESSION_ID;
+  const MAX_REROLLS = 2;
+  const LS_KEY = 'k20sort_assignment_' + SESSION_ID;
+
+  // =========================================================================
+  // THE CAST — 6 roles, each with two highly-distinct color variants
+  // =========================================================================
+  const ROLES = [
+    {
+      name: 'The Director',
+      tagline: 'You see the big picture. You know what story you\'re trying to tell.',
+      icon: '🎬',
+      prompt: 'What\'s one ed tech practice at your school that you\'d put on the marquee — something you\'d want other schools to see? What makes it work?',
+      colors: [
+        { hex: '#1E4D8C', name: 'Royal Blue' },
+        { hex: '#F08020', name: 'Orange' }
+      ]
+    },
+    {
+      name: 'The Cinematographer',
+      tagline: 'You care about how it actually looks and feels day to day.',
+      icon: '🎥',
+      prompt: 'What\'s a small technical move — a tool, a routine, a workflow — that\'s quietly made a big difference in your classroom or building?',
+      colors: [
+        { hex: '#6B2D8C', name: 'Purple' },
+        { hex: '#F2C438', name: 'Yellow' }
+      ]
+    },
+    {
+      name: 'The Editor',
+      tagline: 'You decide what stays in and what hits the cutting room floor.',
+      icon: '🎞️',
+      prompt: 'What\'s an ed tech practice your school stopped doing — and why? What did you replace it with, if anything?',
+      colors: [
+        { hex: '#C0252B', name: 'Red' },
+        { hex: '#3DA7E0', name: 'Sky Blue' }
+      ]
+    },
+    {
+      name: 'The Casting Director',
+      tagline: 'You know the right person makes everything work.',
+      icon: '🎭',
+      prompt: 'Who at your school is doing ed tech work nobody knows about? Coaches, librarians, that one teacher — who deserves more spotlight, and what are they doing?',
+      colors: [
+        { hex: '#2D7A3E', name: 'Green' },
+        { hex: '#7A4A1F', name: 'Brown' }
+      ]
+    },
+    {
+      name: 'The Producer',
+      tagline: 'Vision meets reality at your desk. You handle the budget, the schedule, the politics.',
+      icon: '💼',
+      prompt: 'What\'s a constraint at your school — money, time, buy-in, infrastructure — that you\'ve found a real way around? What\'s the workaround?',
+      colors: [
+        { hex: '#1FAFA8', name: 'Turquoise' },
+        { hex: '#E83F8E', name: 'Hot Pink' }
+      ]
+    },
+    {
+      name: 'The Critic',
+      tagline: 'Your job is to say what others won\'t.',
+      icon: '📝',
+      prompt: 'What\'s an overhyped ed tech trend you\'re tired of hearing about — and what would you rather see schools talk about instead?',
+      colors: [
+        { hex: '#9BA3AB', name: 'Silver' },
+        { hex: '#C8A23A', name: 'Gold' }
+      ]
+    }
+  ];
+
+  // Flatten into 12 ordered crews. The order interleaves so adjacent arrivals
+  // get different roles AND different colors as the counter cycles.
+  const CREWS = [];
+  ROLES.forEach((role) => {
+    role.colors.forEach((color) => {
+      CREWS.push({ index: CREWS.length, role, color });
+    });
+  });
+
+  // =========================================================================
+  // ASSIGNMENT LOGIC
+  // =========================================================================
+
+  async function getCounterPosition() {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4000);
+      const response = await fetch(COUNTER_URL, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (!response.ok) return null;
+      const data = await response.json();
+      return typeof data.value === 'number' ? data.value : null;
+    } catch (e) {
+      console.warn('Counter unreachable, falling back to random:', e);
+      return null;
+    }
+  }
+
+  function crewFromPosition(position) {
+    const idx = ((position - 1) % CREWS.length + CREWS.length) % CREWS.length;
+    return CREWS[idx];
+  }
+
+  function randomCrew() {
+    return CREWS[Math.floor(Math.random() * CREWS.length)];
+  }
+
+  // =========================================================================
+  // RENDER
+  // =========================================================================
+
+  function render(crew, usedFallback) {
+    document.getElementById('loadingView').classList.add('hidden');
+    document.getElementById('card').classList.remove('hidden');
+    document.getElementById('instructions').classList.remove('hidden');
+    document.getElementById('rerollBtn').classList.remove('hidden');
+    document.getElementById('rerollNote').classList.remove('hidden');
+
+    document.getElementById('colorBand').style.background = crew.color.hex;
+    document.getElementById('roleIcon').textContent = crew.role.icon;
+    document.getElementById('roleName').textContent = crew.role.name;
+    document.getElementById('roleTagline').textContent = crew.role.tagline;
+    document.getElementById('groupId').textContent =
+      crew.color.name + ' Crew · ' + crew.role.name.replace('The ', '');
+    document.getElementById('promptText').textContent = crew.role.prompt;
+
+    document.getElementById('fallbackNotice').classList.toggle('hidden', !usedFallback);
+
+    const card = document.getElementById('card');
+    card.style.animation = 'none';
+    void card.offsetWidth;
+    card.style.animation = '';
+  }
+
+  // =========================================================================
+  // STATE — cache assignment so reloads don't burn counter numbers
+  // =========================================================================
+
+  function saveAssignment() {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        crewIndex: state.crew.index,
+        position: state.position,
+        usedFallback: state.usedFallback,
+        rerolls: state.rerolls,
+        timestamp: Date.now()
+      }));
+    } catch (e) { /* localStorage may be disabled */ }
+  }
+
+  function loadAssignment() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      if (Date.now() - data.timestamp > 8 * 3600 * 1000) {
+        localStorage.removeItem(LS_KEY);
+        return null;
+      }
+      return data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // =========================================================================
+  // FLOW
+  // =========================================================================
+
+  let state = null;
+
+  async function initialAssignment() {
+    const cached = loadAssignment();
+    if (cached) {
+      state = {
+        crew: CREWS[cached.crewIndex],
+        position: cached.position,
+        usedFallback: cached.usedFallback,
+        rerolls: cached.rerolls
+      };
+      render(state.crew, state.usedFallback);
+      updateRerollButton();
+      return;
+    }
+
+    const position = await getCounterPosition();
+    if (position !== null) {
+      state = { crew: crewFromPosition(position), position, usedFallback: false, rerolls: 0 };
+    } else {
+      state = { crew: randomCrew(), position: -1, usedFallback: true, rerolls: 0 };
+    }
+    saveAssignment();
+    render(state.crew, state.usedFallback);
+    updateRerollButton();
+  }
+
+  async function reroll() {
+    if (state.rerolls >= MAX_REROLLS) return;
+    const btn = document.getElementById('rerollBtn');
+    btn.disabled = true;
+    btn.textContent = 'Rerolling…';
+
+    document.getElementById('card').classList.add('hidden');
+    document.getElementById('instructions').classList.add('hidden');
+    document.getElementById('fallbackNotice').classList.add('hidden');
+    document.getElementById('loadingView').classList.remove('hidden');
+
+    if (!state.usedFallback) {
+      const position = await getCounterPosition();
+      if (position !== null) {
+        state.crew = crewFromPosition(position);
+        state.position = position;
+      } else {
+        state.crew = randomCrew();
+        state.usedFallback = true;
+      }
+    } else {
+      let newCrew = randomCrew();
+      let tries = 0;
+      while (newCrew.index === state.crew.index && tries < 10) {
+        newCrew = randomCrew();
+        tries++;
+      }
+      state.crew = newCrew;
+    }
+    state.rerolls += 1;
+    saveAssignment();
+
+    btn.disabled = false;
+    render(state.crew, state.usedFallback);
+    updateRerollButton();
+  }
+
+  function updateRerollButton() {
+    const btn = document.getElementById('rerollBtn');
+    const note = document.getElementById('rerollNote');
+    const remaining = MAX_REROLLS - state.rerolls;
+    if (remaining <= 0) {
+      btn.disabled = true;
+      btn.textContent = '✓ No more rerolls';
+      note.textContent = 'You\'re cast. Time to find your crew.';
+    } else {
+      btn.disabled = false;
+      btn.textContent = '⟲ Reroll My Crew';
+      note.textContent = 'Only reroll if your group is already overflowing. (' +
+        remaining + ' reroll' + (remaining === 1 ? '' : 's') + ' left)';
+    }
+  }
+
+  initialAssignment();
+</script>
+
+</body>
+</html>
