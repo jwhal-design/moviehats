@@ -485,11 +485,19 @@
 
 <script>
   // =========================================================================
-  // CONFIG — date-based session ID auto-resets the counter each day
+  // CONFIG
   // =========================================================================
+  //
+  // ⚠️  REPLACE THIS URL with your Cloudflare Worker URL after you deploy it.
+  //    It will look something like:
+  //    https://k20-sort-counter.YOUR-NAME.workers.dev
+  //
+  // The /hit endpoint increments the counter and returns the position number.
+  //
+  const COUNTER_URL = 'https://twilight-rain-59fb.jwhaley.workers.dev/';
+  const MAX_REROLLS = 5;
+  // Session ID for localStorage (date-based so it auto-resets daily)
   const SESSION_ID = 'k20-sort-' + new Date().toISOString().slice(0, 10);
-  const COUNTER_URL = 'https://abacus.jasoncameron.dev/hit/k20sort/' + SESSION_ID;
-  const MAX_REROLLS = 2;
   const LS_KEY = 'k20sort_assignment_' + SESSION_ID;
 
   // =========================================================================
